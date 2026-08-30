@@ -35,8 +35,12 @@ export const sister = [
  */
 export const bundles = [
   { looks: 5,  naira: 10_000, label: 'Starter' },
-  { looks: 10, naira: 20_000, label: 'Full set' },
+  { looks: 10, naira: 17_000, label: 'Full set' },
 ] as const;
+
+/** What the bigger bundle saves against buying the smaller one twice. */
+export const savingOn = (i: number) =>
+  i === 0 ? 0 : bundles[0].naira * (bundles[i].looks / bundles[0].looks) - bundles[i].naira;
 
 export const MIN_LOOKS = bundles[0].looks;
 

@@ -20,7 +20,7 @@ export default function CampusPage() {
         </h1>
         <p className="body-text mt-5 max-w-[52ch]">
           Convocation, induction, matriculation, doctoral. Tap any portrait to add it to your
-          selection — five for ₦10,000, ten for ₦20,000.
+          selection — five for ₦10,000, ten for ₦17,000.
         </p>
         <div className="mt-10">
           <GalleryBrowser shots={campusShots} />

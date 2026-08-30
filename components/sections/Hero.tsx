@@ -99,7 +99,11 @@ export default function Hero({ columns }: { columns: Shot[][] }) {
             key={i}
             data-col
             data-spread={cfg[i].spread}
-            className="h-full w-[clamp(96px,17vw,240px)] shrink-0 overflow-hidden"
+            /* The outer pair sits off-screen on a phone. `hidden` keeps their
+               lazy images from being fetched over mobile data at all. */
+            className={`h-full w-[clamp(104px,17vw,240px)] shrink-0 overflow-hidden ${
+              i === 0 || i === 5 ? 'hidden sm:block' : ''
+            }`}
             style={{ opacity: i === 0 || i === 5 ? 0.5 : i === 1 || i === 4 ? 0.75 : 1 }}
           >
             <div
