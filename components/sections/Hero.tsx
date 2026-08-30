@@ -171,7 +171,7 @@ export default function Hero({ columns }: { columns: Shot[][] }) {
           </div>
         </div>
 
-        <p className="label mt-8 text-[var(--on-ink-3)]" data-hero-tail>
+        <p className="label mt-8 text-[0.62rem] leading-relaxed tracking-[0.16em] text-[var(--on-ink-3)] sm:text-[0.6875rem] sm:tracking-[0.2em]" data-hero-tail>
           <span className="text-[var(--accent)]">✦</span> {hero.proof}
         </p>
       </div>
