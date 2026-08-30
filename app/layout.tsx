@@ -26,6 +26,7 @@ const sans = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
     default: `${site.name} — ${site.tagline}`,
     template: `%s — ${site.name}`,
@@ -36,8 +37,24 @@ export const metadata: Metadata = {
     title: `${site.name} — ${site.tagline}`,
     description:
       'Graduation and NYSC portraits from the photos already on your phone. Approve before you pay.',
+    url: site.url,
+    siteName: site.name,
     type: 'website',
     locale: 'en_NG',
+    images: [
+      {
+        url: '/og.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Dave Studio — graduation and NYSC portraits, from ₦10,000',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${site.name} — ${site.tagline}`,
+    description: 'Graduation and NYSC portraits from the photos already on your phone.',
+    images: ['/og.jpg'],
   },
 };
 
