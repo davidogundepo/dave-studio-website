@@ -70,6 +70,28 @@ def main():
         m = re.match(r"^(\d{2,3})\.", name)
         return int(m.group(1)) if m else None
 
+    # David hand-picked the public-facing set from all 529, one by one. Those
+    # lead every surface — hero, marquee, bento, share card, and the top of both
+    # galleries — because an index-stride pick will happily surface a shot with a
+    # displaced arm. Everything else still ships, just behind them.
+    featured_path = os.path.join(here, "featured.txt")
+    featured_rank = {}
+    if os.path.exists(featured_path):
+        wanted = [l.strip() for l in open(featured_path)
+                  if l.strip() and not l.startswith("#")]
+        stems = {os.path.splitext(r["name"])[0]: r["name"] for r in inv.values()}
+        for rank, w in enumerate(wanted):
+            key = w
+            if key not in stems and re.fullmatch(r"\d{2,3}", w):
+                key = f"{int(w):03d}"                     # bare 070 style entries
+            if key not in stems:                          # tolerate a truncated paste
+                near = [s for s in stems if s.startswith(w)]
+                key = near[0] if len(near) == 1 else None
+            if key is None:
+                print(f"  WARN  featured entry not found: {w}")
+                continue
+            featured_rank[stems[key]] = rank
+
     rows = []
     for h, r in inv.items():
         rows.append({**r, "hash": h, "no": promptno(r["name"])})
@@ -85,6 +107,7 @@ def main():
         items.append({
             "id": ident, "kind": r["kind"], "no": r["no"],
             "title": title or "Studio portrait", "file": r["name"],
+            "feat": featured_rank.get(r["name"]),
         })
         jobs.append((r["path"], ident))
 
@@ -101,11 +124,14 @@ def main():
              "import type { Shot } from './types';", "",
              "export const shots: Shot[] = ["]
     for it in items:
-        lines.append("  { id: %s, kind: %s, no: %s, title: %s }," % (
+        lines.append("  { id: %s, kind: %s, no: %s, feat: %s, title: %s }," % (
             ts(it["id"]), ts(it["kind"]),
-            it["no"] if it["no"] is not None else "null", ts(it["title"], ensure_ascii=False)))
+            it["no"] if it["no"] is not None else "null",
+            it["feat"] if it["feat"] is not None else "null",
+            ts(it["title"], ensure_ascii=False)))
     lines += ["];", ""]
     open(os.path.join(ROOT, "lib", "gallery.generated.ts"), "w").write("\n".join(lines))
+    print(f"  featured: {sum(1 for i in items if i['feat'] is not None)} hand-picked")
     print(f"wrote lib/gallery.generated.ts — {len(items)} shots "
           f"({sum(1 for i in items if i['kind']=='campus')} campus, "
           f"{sum(1 for i in items if i['kind']=='nysc')} nysc)")

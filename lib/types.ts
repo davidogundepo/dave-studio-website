@@ -6,5 +6,7 @@ export interface Shot {
   kind: Kind;
   /** Prompt number in LOOK-LIBRARY.md / NYSC-PROMPTS.md, for tracing back. */
   no: number | null;
+  /** Rank in David's hand-picked set, or null if it is not one of them. */
+  feat: number | null;
   title: string;
 }
