@@ -1,0 +1,175 @@
+'use client';
+
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { useSelection } from '@/components/providers/SelectionProvider';
+import ShotImage from '@/components/media/ShotImage';
+import { shotById } from '@/lib/gallery';
+import { MIN_LOOKS, bundles, naira, quote, site } from '@/lib/site';
+
+/** Builds the WhatsApp message. Look numbers are what David works from. */
+function whatsappHref(ids: string[]) {
+  const lines = ids.map((id, i) => {
+    const s = shotById.get(id);
+    const tag = s?.kind === 'nysc' ? 'NYSC' : 'Campus';
+    return `${i + 1}. ${tag} ${s?.no ?? '?'} — ${s?.title ?? id}  [${id}]`;
+  });
+  const q = quote(ids.length);
+  const price = q.current ? `\n\nBundle: ${q.current.label} — ${naira(q.current.naira)}` : '';
+  const text =
+    `Hi David, I'd like these ${ids.length} looks from Dave Studio:\n\n` +
+    lines.join('\n') +
+    price +
+    `\n\nI'll send my photos next.`;
+  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
+}
+
+export default function CartDrawer() {
+  const { ids, count, remove, clear, open, setOpen } = useSelection();
+  const q = quote(count);
+  const enough = count >= MIN_LOOKS;
+
+  // Lock the page behind the drawer and allow Escape to dismiss.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open, setOpen]);
+
+  return (
+    <>
+      <div
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-[600] bg-black/70 backdrop-blur-sm transition-opacity duration-500 ${
+          open ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        aria-hidden
+      />
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Your selection"
+        className={`fixed right-0 top-0 z-[700] flex h-dvh w-full max-w-[460px] flex-col border-l border-[var(--line)] bg-[var(--ink-2)] transition-transform duration-500 ${
+          open ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        style={{ transitionTimingFunction: 'var(--ease)' }}
+      >
+        <div className="flex items-center justify-between border-b border-[var(--line)] px-6 py-5">
+          <div>
+            <p className="label text-[var(--accent)]">Your selection</p>
+            <p className="mt-1 text-sm text-[var(--on-ink-2)]">
+              {count} {count === 1 ? 'look' : 'looks'} chosen
+            </p>
+          </div>
+          <button
+            onClick={() => setOpen(false)}
+            className="grid h-9 w-9 place-items-center rounded-full border border-[var(--line-strong)] text-lg transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          {count === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <p className="editorial text-2xl text-[var(--on-ink)]">Nothing picked yet.</p>
+              <p className="body-text mt-3 max-w-[26ch]">
+                Tap any portrait in the gallery and it lands here.
+              </p>
+              <Link
+                href="/campus/"
+                onClick={() => setOpen(false)}
+                className="btn btn-ghost mt-7"
+              >
+                Browse Campus
+              </Link>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {ids.map((id, i) => {
+                const s = shotById.get(id);
+                return (
+                  <li key={id} className="flex items-center gap-3">
+                    <span className="w-5 shrink-0 text-right text-xs text-[var(--on-ink-3)]">
+                      {i + 1}
+                    </span>
+                    <div className="h-[68px] w-[52px] shrink-0 overflow-hidden rounded-md bg-[var(--ink-3)]">
+                      <ShotImage id={id} size="thumb" alt={s?.title ?? ''} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm text-[var(--on-ink)]">{s?.title}</p>
+                      <p className="label mt-0.5 text-[var(--on-ink-3)]">
+                        {s?.kind === 'nysc' ? 'NYSC' : 'Campus'} · {s?.no}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => remove(id)}
+                      className="shrink-0 text-xs text-[var(--on-ink-3)] transition-colors hover:text-[var(--accent)]"
+                      aria-label={`Remove ${s?.title}`}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className="border-t border-[var(--line)] px-6 py-5">
+          {/* The nudge to the next bundle is the whole reason this panel exists. */}
+          {q.next && (
+            <p className="mb-3 rounded-lg bg-[var(--accent-soft)] px-3 py-2 text-center text-xs text-[var(--accent)]">
+              {enough
+                ? `Add ${q.remaining} more for the ${q.next.label} — ${naira(q.next.naira)}`
+                : `${q.remaining} more to unlock ${naira(bundles[0].naira)} for ${bundles[0].looks}`}
+            </p>
+          )}
+
+          <div className="mb-4 flex items-baseline justify-between">
+            <span className="label text-[var(--on-ink-2)]">
+              {q.current ? q.current.label : `Minimum ${MIN_LOOKS}`}
+            </span>
+            <span className="display text-2xl text-[var(--on-ink)]">
+              {q.current ? naira(q.current.naira) : '—'}
+            </span>
+          </div>
+
+          <a
+            href={enough ? whatsappHref(ids) : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-disabled={!enough}
+            onClick={(e) => !enough && e.preventDefault()}
+            className={`btn w-full justify-center ${
+              enough ? 'btn-gold' : 'cursor-not-allowed border border-[var(--line)] text-[var(--on-ink-3)]'
+            }`}
+          >
+            {enough ? 'Send to David on WhatsApp' : `Pick ${MIN_LOOKS - count} more`}
+          </a>
+
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-[0.7rem] text-[var(--on-ink-3)]">
+              You approve before you pay.
+            </p>
+            {count > 0 && (
+              <button
+                onClick={clear}
+                className="text-[0.7rem] text-[var(--on-ink-3)] underline transition-colors hover:text-[var(--accent)]"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+}
