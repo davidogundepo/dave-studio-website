@@ -25,7 +25,7 @@ export default function NyscPage() {
           so every look here works whichever state posted you.
         </p>
         <div className="mt-10">
-          <GalleryBrowser shots={nyscShots} accent="var(--amber)" />
+          <GalleryBrowser shots={nyscShots} accent="var(--amber)" kindLabel="NYSC" />
         </div>
       </div>
     </section>

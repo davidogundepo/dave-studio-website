@@ -15,12 +15,48 @@ const GROUP = /\b(two|three|four|five|nine|family|mother|father|couple|friends|p
 
 type Filter = 'all' | 'solo' | 'group';
 
+/**
+ * The search box doubles as a catalogue lookup. An order arrives naming files —
+ * campus-004, campus-006, campus-011 — and pasting those numbers back in shows
+ * exactly those looks, in the order they were typed, so a selection can be
+ * checked against the grid without hunting.
+ *
+ * Number mode engages only when every token is a number (optionally with its
+ * campus-/nysc- prefix); anything else stays an ordinary title search.
+ */
+function parseNumbers(query: string): number[] | null {
+  if (!query) return null;
+
+  // A whole order pasted out of WhatsApp — numbering, titles, prices and all —
+  // still filters correctly, because a prefixed name is unambiguous wherever it
+  // appears in the text.
+  const prefixed = [...query.matchAll(/\b(?:campus|nysc)-0*(\d{1,4})\b/gi)];
+  if (prefixed.length > 0) {
+    return [...new Set(prefixed.map((m) => Number(m[1])))];
+  }
+
+  // Otherwise a bare list — "4, 6, 11" — but only if that is all it is, so an
+  // ordinary word search is never hijacked.
+  const tokens = query.split(/[\s,;]+/).filter(Boolean);
+  if (tokens.length === 0) return null;
+
+  const numbers: number[] = [];
+  for (const tok of tokens) {
+    const m = /^0*(\d{1,4})$/.exec(tok);
+    if (!m) return null;
+    numbers.push(Number(m[1]));
+  }
+  return [...new Set(numbers)];
+}
+
 export default function GalleryBrowser({
   shots,
   accent = 'var(--accent)',
+  kindLabel = 'this gallery',
 }: {
   shots: Shot[];
   accent?: string;
+  kindLabel?: string;
 }) {
   const { has, toggle, count, setOpen } = useSelection();
   const [filter, setFilter] = useState<Filter>('all');
@@ -29,15 +65,27 @@ export default function GalleryBrowser({
   const [lightbox, setLightbox] = useState<Shot | null>(null);
   const sentinel = useRef<HTMLDivElement>(null);
 
-  const list = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return shots.filter((s) => {
+  const wanted = useMemo(() => parseNumbers(query.trim()), [query]);
+
+  const { list, missing } = useMemo(() => {
+    const byFilter = shots.filter((s) => {
       if (filter === 'group' && !GROUP.test(s.title)) return false;
       if (filter === 'solo' && GROUP.test(s.title)) return false;
-      if (q && !s.title.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [shots, filter, query]);
+
+    if (wanted) {
+      const byRef = new Map(byFilter.map((s) => [s.ref, s]));
+      const found = wanted.map((n) => byRef.get(n)).filter((s): s is Shot => Boolean(s));
+      return { list: found, missing: wanted.filter((n) => !byRef.has(n)) };
+    }
+
+    const q = query.trim().toLowerCase();
+    return {
+      list: q ? byFilter.filter((s) => s.title.toLowerCase().includes(q)) : byFilter,
+      missing: [] as number[],
+    };
+  }, [shots, filter, query, wanted]);
 
   // Reset the window whenever the result set changes, or "load more" would be
   // showing a page count from the previous filter.
@@ -82,13 +130,25 @@ export default function GalleryBrowser({
             ))}
           </div>
 
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search looks…"
-            aria-label="Search looks"
-            className="min-w-[10rem] flex-1 rounded-full border border-[var(--line-strong)] bg-transparent px-4 py-2 text-sm outline-none transition-colors placeholder:text-[var(--on-ink-3)] focus:border-[var(--accent)]"
-          />
+          <div className="relative min-w-[12rem] flex-1">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search looks, or paste numbers: 4, 6, 11"
+              aria-label="Search looks by name, or filter by catalogue number"
+              className="w-full rounded-full border bg-transparent py-2 pl-4 pr-9 text-sm outline-none transition-colors placeholder:text-[var(--on-ink-3)]"
+              style={{ borderColor: wanted ? accent : 'var(--line-strong)' }}
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--on-ink-3)] transition-colors hover:text-[var(--accent)]"
+              >
+                ×
+              </button>
+            )}
+          </div>
 
           <p className="label ml-auto text-[var(--on-ink-3)]">
             {list.length} {list.length === 1 ? 'look' : 'looks'}
@@ -96,7 +156,42 @@ export default function GalleryBrowser({
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-3.5">
+      {wanted && (
+        <div
+          className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[var(--radius)] border px-4 py-3"
+          style={{ borderColor: accent, background: 'color-mix(in srgb, var(--ink-2) 70%, transparent)' }}
+        >
+          <p className="text-sm">
+            <span className="font-semibold" style={{ color: accent }}>
+              {list.length} of {wanted.length}
+            </span>{' '}
+            <span className="text-[var(--on-ink-2)]">
+              found in {kindLabel}
+            </span>
+          </p>
+
+          {missing.length > 0 && (
+            <p className="text-sm text-[var(--on-ink-3)]">
+              Not here:{' '}
+              <span className="text-[var(--on-ink-2)]">
+                {missing.map((n) => String(n).padStart(3, '0')).join(', ')}
+              </span>
+            </p>
+          )}
+
+          {list.length > 0 && (
+            <button
+              onClick={() => list.forEach((s) => !has(s.id) && toggle(s.id))}
+              className="label ml-auto rounded-full px-3.5 py-1.5 transition-colors"
+              style={{ background: accent, color: '#04191D' }}
+            >
+              Select all {list.length}
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-3.5">
         {list.slice(0, shown).map((s, i) => {
           const on = has(s.id);
           return (

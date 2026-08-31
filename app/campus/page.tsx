@@ -23,7 +23,7 @@ export default function CampusPage() {
           selection — five for ₦10,000, ten for ₦17,000.
         </p>
         <div className="mt-10">
-          <GalleryBrowser shots={campusShots} />
+          <GalleryBrowser shots={campusShots} kindLabel="Campus" />
         </div>
       </div>
     </section>
