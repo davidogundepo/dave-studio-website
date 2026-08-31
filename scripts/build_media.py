@@ -64,10 +64,25 @@ def main():
     inv    = json.load(open(os.path.join(here, "inventory.json")))
     titles = json.load(open(os.path.join(here, "titles.json")))
 
+    # Sources are renamed to catalogue numbers (campus-047.png), so the prompt
+    # number is recovered through each folder's RENAME-UNDO.json rather than
+    # from the filename in front of us.
+    original = {}
+    for d in {os.path.dirname(r["path"]) for r in inv.values()}:
+        u = os.path.join(d, "RENAME-UNDO.json")
+        if os.path.exists(u):
+            original.update(json.load(open(u)))
+
     def promptno(name):
+        name = original.get(name, name)
         m = re.match(r"magnific_(\d+)", name)
         if m: return int(m.group(1))
         m = re.match(r"^(\d{2,3})\.", name)
+        return int(m.group(1)) if m else None
+
+    def catalogue(name):
+        """The number the studio opens the file by: campus-047.png -> 47."""
+        m = re.match(r"(?:campus|nysc)-(\d+)", name)
         return int(m.group(1)) if m else None
 
     # David hand-picked the public-facing set from all 529, one by one. Those
@@ -79,7 +94,12 @@ def main():
     if os.path.exists(featured_path):
         wanted = [l.strip() for l in open(featured_path)
                   if l.strip() and not l.startswith("#")]
-        stems = {os.path.splitext(r["name"])[0]: r["name"] for r in inv.values()}
+        stems = {}
+        for r in inv.values():
+            stems[os.path.splitext(r["name"])[0]] = r["name"]
+            orig = original.get(r["name"])
+            if orig:
+                stems[os.path.splitext(orig)[0]] = r["name"]
         for rank, w in enumerate(wanted):
             key = w
             if key not in stems and re.fullmatch(r"\d{2,3}", w):
@@ -115,6 +135,8 @@ def main():
             "id": ident, "kind": r["kind"], "no": r["no"],
             "title": title or "Studio portrait", "file": r["name"],
             "feat": featured_rank.get(r["name"]),
+            "ref": catalogue(r["name"]),
+            "file": r["name"],
         })
         jobs.append((r["path"], ident))
 
@@ -131,9 +153,10 @@ def main():
              "import type { Shot } from './types';", "",
              "export const shots: Shot[] = ["]
     for it in items:
-        lines.append("  { id: %s, kind: %s, no: %s, feat: %s, title: %s }," % (
+        lines.append("  { id: %s, kind: %s, no: %s, ref: %s, feat: %s, title: %s }," % (
             ts(it["id"]), ts(it["kind"]),
             it["no"] if it["no"] is not None else "null",
+            it["ref"] if it["ref"] is not None else "null",
             it["feat"] if it["feat"] is not None else "null",
             ts(it["title"], ensure_ascii=False)))
     lines += ["];", ""]

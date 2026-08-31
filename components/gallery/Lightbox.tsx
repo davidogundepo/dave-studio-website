@@ -46,7 +46,8 @@ export default function Lightbox({ shot, onClose }: { shot: Shot | null; onClose
           <div className="min-w-0">
             <p className="truncate text-sm text-[var(--on-ink)]">{shot.title}</p>
             <p className="label mt-1 text-[var(--on-ink-3)]">
-              {shot.kind === 'nysc' ? 'NYSC' : 'Campus'} · Look {shot.no}
+              {shot.kind === 'nysc' ? 'NYSC' : 'Campus'}
+              {shot.ref !== null && ` · ${String(shot.ref).padStart(3, '0')}`}
             </p>
           </div>
           <div className="flex shrink-0 gap-2">

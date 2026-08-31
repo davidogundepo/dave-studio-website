@@ -7,17 +7,27 @@ import ShotImage from '@/components/media/ShotImage';
 import { shotById } from '@/lib/gallery';
 import { MIN_LOOKS, bundles, naira, quote, site } from '@/lib/site';
 
-/** Builds the WhatsApp message. Look numbers are what David works from. */
+/**
+ * Builds the WhatsApp message.
+ *
+ * Each line names the file the studio actually opens — `campus-047.png` — not
+ * the prompt number, which is ambiguous (82 prompt numbers cover more than one
+ * image), and not the internal id, which is a content hash nobody can find on
+ * disk. Unresolvable ids are dropped rather than sent as a row that cannot be
+ * fulfilled.
+ */
 function whatsappHref(ids: string[]) {
-  const lines = ids.map((id, i) => {
-    const s = shotById.get(id);
-    const tag = s?.kind === 'nysc' ? 'NYSC' : 'Campus';
-    return `${i + 1}. ${tag} ${s?.no ?? '?'} — ${s?.title ?? id}  [${id}]`;
-  });
+  const lines = ids
+    .map((id) => shotById.get(id))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s))
+    .map((s, i) => {
+      const file = s.ref !== null ? `${s.kind}-${String(s.ref).padStart(3, '0')}` : s.id;
+      return `${i + 1}. ${file}  ·  ${s.title}`;
+    });
   const q = quote(ids.length);
   const price = q.current ? `\n\nBundle: ${q.current.label} — ${naira(q.current.naira)}` : '';
   const text =
-    `Hi David, I'd like these ${ids.length} looks from Dave Studio:\n\n` +
+    `Hi David, I'd like these ${lines.length} looks from Dave Studio:\n\n` +
     lines.join('\n') +
     price +
     `\n\nI'll send my photos next.`;
@@ -106,7 +116,8 @@ export default function CartDrawer() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm text-[var(--on-ink)]">{s?.title}</p>
                       <p className="label mt-0.5 text-[var(--on-ink-3)]">
-                        {s?.kind === 'nysc' ? 'NYSC' : 'Campus'} · {s?.no}
+                        {s?.kind === 'nysc' ? 'NYSC' : 'Campus'}
+                        {s?.ref != null && ` · ${String(s.ref).padStart(3, '0')}`}
                       </p>
                     </div>
                     <button

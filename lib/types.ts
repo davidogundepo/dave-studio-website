@@ -8,5 +8,7 @@ export interface Shot {
   no: number | null;
   /** Rank in David's hand-picked set, or null if it is not one of them. */
   feat: number | null;
+  /** Catalogue number — the file is campus-<ref>.png / nysc-<ref>.png. */
+  ref: number | null;
   title: string;
 }
