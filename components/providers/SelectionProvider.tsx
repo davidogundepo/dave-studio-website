@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { shotById } from '@/lib/gallery';
 
 const KEY = 'dave-studio-selection';
 
@@ -25,13 +26,22 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
   const [lastAdded, setLastAdded] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
-  // Restore on mount. Wrapped because private-mode browsers throw on access.
+  /**
+   * Restore on mount, defensively. The stored value is whatever was in the
+   * browser months ago: it may be malformed, and it may name shots that have
+   * since left the catalogue. Anything we cannot resolve to a real shot is
+   * dropped rather than carried into the order — a row the studio cannot
+   * fulfil is worse than a shorter selection.
+   */
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setIds(JSON.parse(raw));
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) {
+        setIds(parsed.filter((v): v is string => typeof v === 'string' && shotById.has(v)));
+      }
     } catch {
-      /* no stored selection is a fine starting state */
+      /* an unreadable or absent selection is a fine starting state */
     }
     setHydrated(true);
   }, []);

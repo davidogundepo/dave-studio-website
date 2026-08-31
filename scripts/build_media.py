@@ -98,11 +98,18 @@ def main():
     # stable order: prompt number, then filename
     rows.sort(key=lambda r: (r["kind"], r["no"] if r["no"] is not None else 9999, r["name"]))
 
+    # The id is derived from the image's own content hash, never from its
+    # position. Positional ids (c001, c002, …) renumber every shot after any
+    # deletion, which silently rewrites a customer's saved selection into
+    # different photographs and sends the studio an order nobody placed.
+    # A content id is stable for the life of the image.
     items, jobs = [], []
-    seq = {"campus": 0, "nysc": 0}
+    seen_ids = {}
     for r in rows:
-        seq[r["kind"]] += 1
-        ident = f"{'c' if r['kind']=='campus' else 'n'}{seq[r['kind']]:03d}"
+        ident = f"{'c' if r['kind']=='campus' else 'n'}{r['hash'][:7]}"
+        if ident in seen_ids:                      # 7 hex chars, but be certain
+            ident = f"{ident}{r['hash'][7:9]}"
+        seen_ids[ident] = r["name"]
         title = titles[r["kind"]].get(str(r["no"])) if r["no"] is not None else None
         items.append({
             "id": ident, "kind": r["kind"], "no": r["no"],
@@ -132,9 +139,24 @@ def main():
     lines += ["];", ""]
     open(os.path.join(ROOT, "lib", "gallery.generated.ts"), "w").write("\n".join(lines))
     print(f"  featured: {sum(1 for i in items if i['feat'] is not None)} hand-picked")
+    assert len(seen_ids) == len(items), "id collision — widen the hash slice"
     print(f"wrote lib/gallery.generated.ts — {len(items)} shots "
           f"({sum(1 for i in items if i['kind']=='campus')} campus, "
           f"{sum(1 for i in items if i['kind']=='nysc')} nysc)")
+
+    # Derivatives whose shot no longer exists would otherwise keep being served:
+    # the build only ever adds, so a deleted source leaves its images behind.
+    live = {i["id"] for i in items}
+    stale = 0
+    for kind in SIZES:
+        d = os.path.join(OUT, kind)
+        if not os.path.isdir(d):
+            continue
+        for f in os.listdir(d):
+            if os.path.splitext(f)[0] not in live:
+                os.remove(os.path.join(d, f)); stale += 1
+    if stale:
+        print(f"  pruned {stale} derivatives whose source image is gone")
 
 
 if __name__ == "__main__":

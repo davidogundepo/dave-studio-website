@@ -18,16 +18,31 @@ interface Props {
  * A plain <img> against the pre-built WebP derivatives. next/image is pointless
  * here: static export has no optimizer and every file is already the right size.
  *
- * A cached image can finish decoding before React attaches onLoad, so the event
- * never fires and the tile would stay invisible. Checking `complete` on mount
- * closes that gap.
+ * Two failure modes are handled, both of which otherwise leave a silent hole in
+ * the grid. A cached image can finish decoding before React attaches onLoad, so
+ * the event never fires — `complete` on mount closes that. And a request that
+ * fails outright would sit at opacity 0 forever, so a failed image falls back to
+ * a tinted panel rather than a gap the visitor cannot tell from a loading tile.
  */
 export default function ShotImage({ id, size, alt, className = '', priority, sizes }: Props) {
-  const [ready, setReady] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
 
   const measure = useCallback((node: HTMLImageElement | null) => {
-    if (node?.complete) setReady(true);
+    if (!node?.complete) return;
+    setStatus(node.naturalWidth > 0 ? 'ready' : 'failed');
   }, []);
+
+  if (status === 'failed') {
+    return (
+      <span
+        role="img"
+        aria-label={alt}
+        className={`flex h-full w-full items-center justify-center bg-[var(--ink-3)] p-3 text-center ${className}`}
+      >
+        <span className="label text-[0.6rem] text-[var(--on-ink-3)]">Preview unavailable</span>
+      </span>
+    );
+  }
 
   return (
     <img
@@ -38,9 +53,10 @@ export default function ShotImage({ id, size, alt, className = '', priority, siz
       decoding="async"
       fetchPriority={priority ? 'high' : 'auto'}
       sizes={sizes}
-      onLoad={() => setReady(true)}
+      onLoad={() => setStatus('ready')}
+      onError={() => setStatus('failed')}
       className={`h-full w-full object-cover transition-opacity duration-700 ${
-        ready ? 'opacity-100' : 'opacity-0'
+        status === 'ready' ? 'opacity-100' : 'opacity-0'
       } ${className}`}
     />
   );
