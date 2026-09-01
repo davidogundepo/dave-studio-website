@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelection } from '@/components/providers/SelectionProvider';
-import { site } from '@/lib/site';
+import { site, waHref } from '@/lib/site';
 
 const links = [
   { href: '/campus/', label: 'Campus' },
@@ -140,7 +140,7 @@ export default function Nav() {
             </Link>
           ))}
           <a
-            href={`https://wa.me/${site.whatsapp}`}
+            href={waHref()}
             target="_blank"
             rel="noopener noreferrer"
             className="label py-4 text-[var(--accent)]"

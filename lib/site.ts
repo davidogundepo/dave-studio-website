@@ -7,6 +7,16 @@ export const site = {
   instagram: 'https://instagram.com/davestudio.ng',
 } as const;
 
+/**
+ * A wa.me link with no `?text=` opens to a blank compose box — David has no
+ * way to tell it apart from a cold message to his personal number. Every
+ * WhatsApp link on the site should go through this, not build its own href,
+ * so a stray blank link never sneaks back in.
+ */
+export function waHref(message = "Hi David, I'm reaching out from the Dave Studio website.") {
+  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
+}
+
 /** The rest of the group — separate businesses, separate sites. */
 export const sister = [
   {

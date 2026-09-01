@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Reveal from './Reveal';
-import { bundles, naira, savingOn, site } from '@/lib/site';
+import { bundles, naira, savingOn, site, waHref } from '@/lib/site';
 import { guarantee } from '@/lib/copy';
 
 export default function Pricing() {
@@ -86,7 +86,7 @@ export default function Pricing() {
         <p className="mt-6 text-center text-sm text-[var(--on-ink-3)]">
           Questions first?{' '}
           <a
-            href={`https://wa.me/${site.whatsapp}`}
+            href={waHref()}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[var(--accent)] underline underline-offset-4"

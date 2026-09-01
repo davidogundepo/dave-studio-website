@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { naira, bundles, site, sister } from '@/lib/site';
+import { naira, bundles, site, sister, waHref } from '@/lib/site';
 
 const columns = [
   {
@@ -41,7 +41,7 @@ export default function Footer() {
                 alt=""
                 width={72}
                 height={72}
-                className="rounded-[18px]"
+                className="rounded-[10px]"
               />
               <span className="editorial text-[1.5rem] not-italic leading-none">Dave Studio</span>
             </div>
@@ -52,7 +52,7 @@ export default function Footer() {
             </p>
 
             <a
-              href={`https://wa.me/${site.whatsapp}`}
+              href={waHref()}
               target="_blank"
               rel="noreferrer noopener"
               className="display mt-8 inline-block text-[clamp(1.15rem,2.2vw,1.9rem)] leading-none underline decoration-[var(--accent)] decoration-2 underline-offset-8 transition-colors duration-300 hover:text-[var(--accent)]"
@@ -61,7 +61,7 @@ export default function Footer() {
             </a>
 
             <a
-              href={`https://wa.me/${site.whatsapp}`}
+              href={waHref()}
               target="_blank"
               rel="noreferrer noopener"
               className="mt-5 flex items-center gap-2.5 text-[var(--on-ink-2)] transition-colors duration-300 hover:text-[var(--accent)]"

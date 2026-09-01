@@ -2,7 +2,7 @@ import Link from 'next/link';
 import ShotImage from '@/components/media/ShotImage';
 import Reveal from './Reveal';
 import { finalCta } from '@/lib/copy';
-import { site } from '@/lib/site';
+import { site, waHref } from '@/lib/site';
 import type { Shot } from '@/lib/types';
 
 export default function FinalCta({ backdrop }: { backdrop: Shot }) {
@@ -38,7 +38,7 @@ export default function FinalCta({ backdrop }: { backdrop: Shot }) {
           <p className="label mt-8 text-[var(--on-ink-3)]">
             or WhatsApp{' '}
             <a
-              href={`https://wa.me/${site.whatsapp}`}
+              href={waHref()}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--accent)]"
