@@ -8,6 +8,7 @@ import { useGSAP } from '@gsap/react';
 import ShotImage from '@/components/media/ShotImage';
 import { hero } from '@/lib/copy';
 import { prefersReducedMotion, whenVisible } from '@/lib/motion';
+import { glideToHash, pushHash } from '@/lib/anchorScroll';
 import type { Shot } from '@/lib/types';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -169,7 +170,15 @@ export default function Hero({ columns }: { columns: Shot[][] }) {
             <Link href="/campus/" className="btn btn-gold">
               {hero.primary}
             </Link>
-            <Link href="#how" className="btn btn-ghost">
+            <Link
+              href="#how"
+              className="btn btn-ghost"
+              onClick={(e) => {
+                e.preventDefault();
+                if (glideToHash('#how')) pushHash('/#how');
+                else window.location.hash = 'how';
+              }}
+            >
               {hero.secondary}
             </Link>
           </div>

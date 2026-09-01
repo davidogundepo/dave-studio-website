@@ -25,6 +25,15 @@ export function waHref(message = "Hi David, I'm reaching out from the Dave Studi
   return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
 }
 
+/**
+ * Same idea for email: a bare mailto gives no clue in the inbox which site it
+ * came from. Every plain "write to me" mailto on the site should go through
+ * this rather than build its own href.
+ */
+export function mailHref(subject = 'Enquiry from the Dave Studio website') {
+  return `mailto:${site.email}?subject=${encodeURIComponent(subject)}`;
+}
+
 /** The rest of the group — separate businesses, separate sites. */
 export const sister = [
   {

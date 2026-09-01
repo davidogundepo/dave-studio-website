@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelection } from '@/components/providers/SelectionProvider';
 import { site, waHref } from '@/lib/site';
+import { glideToHash, pushHash } from '@/lib/anchorScroll';
 
 const links = [
   { href: '/campus/', label: 'Campus' },
@@ -36,6 +37,20 @@ export default function Nav() {
 
   const isActive = (href: string) =>
     href.startsWith('/#') ? path === '/' && hash === href.slice(1) : path === href;
+
+  // Next's Link intercepts the click and routes it internally, so a native
+  // hashchange event firing isn't guaranteed — and the browser's own anchor
+  // jump is an instant cut, not a landing. When we're already on the page
+  // the section lives on, take over: glide there through Lenis and push the
+  // hash into the URL ourselves. Otherwise let Link do a real navigation.
+  const goToHash = (href: string, e: React.MouseEvent) => {
+    const target = href.slice(1);
+    setHash(target);
+    if (path !== '/') return;
+    e.preventDefault();
+    if (glideToHash(target)) pushHash(href);
+    else window.location.hash = target;
+  };
 
   useEffect(() => {
     if (!menu) return;
@@ -87,10 +102,7 @@ export default function Nav() {
             <Link
               key={l.href}
               href={l.href}
-              // Next's Link intercepts the click and routes it internally, so a
-              // native hashchange event firing isn't guaranteed — set it
-              // ourselves rather than wait on a browser event that may not come.
-              onClick={() => l.href.startsWith('/#') && setHash(l.href.slice(1))}
+              onClick={(e) => l.href.startsWith('/#') && goToHash(l.href, e)}
               className={`label transition-colors duration-300 hover:text-[var(--accent)] ${
                 isActive(l.href) ? 'text-[var(--accent)]' : 'text-[var(--on-ink-2)]'
               }`}
@@ -151,9 +163,9 @@ export default function Nav() {
             <Link
               key={l.href}
               href={l.href}
-              onClick={() => {
+              onClick={(e) => {
                 setMenu(false);
-                if (l.href.startsWith('/#')) setHash(l.href.slice(1));
+                if (l.href.startsWith('/#')) goToHash(l.href, e);
               }}
               className={`display border-b border-[var(--line)] py-4 text-[1.6rem] transition-colors last:border-0 hover:text-[var(--accent)] ${
                 isActive(l.href) ? 'text-[var(--accent)]' : ''

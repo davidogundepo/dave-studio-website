@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { naira, bundles, site, sister, social, waHref } from '@/lib/site';
+import AnchorLink from '@/components/ui/AnchorLink';
+import { naira, bundles, site, sister, social, waHref, mailHref } from '@/lib/site';
 
 const columns = [
   {
@@ -109,16 +110,23 @@ export default function Footer() {
             <div key={column.heading}>
               <p className="label text-[var(--on-ink-3)]">{column.heading}</p>
               <ul className="mt-5 space-y-3">
-                {column.links.map((link) => (
-                  <li key={link.href + link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-[0.95rem] text-[var(--on-ink)] transition-colors duration-300 hover:text-[var(--accent)]"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {column.links.map((link) => {
+                  const linkClassName =
+                    'text-[0.95rem] text-[var(--on-ink)] transition-colors duration-300 hover:text-[var(--accent)]';
+                  return (
+                    <li key={link.href + link.label}>
+                      {link.href.startsWith('/#') ? (
+                        <AnchorLink href={link.href as `/#${string}`} className={linkClassName}>
+                          {link.label}
+                        </AnchorLink>
+                      ) : (
+                        <Link href={link.href} className={linkClassName}>
+                          {link.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -152,7 +160,7 @@ export default function Footer() {
             {/* Sits in the empty room this shorter column has under it,
                 since the info column on the left runs much taller. */}
             <a
-              href={`mailto:${site.email}`}
+              href={mailHref()}
               className="mt-10 flex items-center gap-2 text-sm text-[var(--on-ink-2)] transition-colors duration-300 hover:text-[var(--accent)]"
             >
               <MailIcon />
