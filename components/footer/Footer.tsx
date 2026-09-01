@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { naira, bundles, site, sister, waHref } from '@/lib/site';
+import { naira, bundles, site, sister, social, waHref } from '@/lib/site';
 
 const columns = [
   {
@@ -79,6 +79,30 @@ export default function Footer() {
               <WhatsAppIcon />
               <span className="label">Message David</span>
             </a>
+
+            <div className="mt-6 flex gap-5">
+              {social.map((s) =>
+                s.href ? (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="label text-[var(--on-ink-3)] transition-colors duration-300 hover:text-[var(--accent)]"
+                  >
+                    {s.label}
+                  </a>
+                ) : (
+                  <span
+                    key={s.label}
+                    aria-disabled="true"
+                    className="label text-[var(--on-ink-3)]/40"
+                  >
+                    {s.label}
+                  </span>
+                ),
+              )}
+            </div>
           </div>
 
           {columns.map((column) => (

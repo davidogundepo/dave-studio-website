@@ -5,8 +5,15 @@ export const site = {
   whatsapp: '2347079693500',
   whatsappDisplay: '+234 707 969 3500',
   email: 'david.oludepo@gmail.com',
-  instagram: 'https://instagram.com/davestudio.ng',
 } as const;
+
+/** `href: null` renders unlinked — plain text, no anchor — until there's a real
+ *  page to point at. Swap it in the moment the account exists. */
+export const social = [
+  { label: 'Instagram', href: 'https://instagram.com/davestudioai' },
+  { label: 'TikTok', href: 'https://tiktok.com/@davestudioai' },
+  { label: 'Facebook', href: null },
+] as const;
 
 /**
  * A wa.me link with no `?text=` opens to a blank compose box — David has no
