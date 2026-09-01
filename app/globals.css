@@ -56,6 +56,17 @@
 
   ::selection { background-color: var(--accent); color: #04191D; }
 
+  /* No custom focus style existed anywhere on the site, so every link, button
+     and input fell back to the browser's raw default outline — a plain blue
+     rectangle that clashes hard against this dark, teal-accented design and
+     reads as broken rather than intentional. `:focus-visible` keeps it a
+     keyboard/a11y affordance only, not a mouse-click artifact. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   /* Deliberately no `[data-reveal] { opacity: 0 }` here. Hiding content in CSS
      and relying on JS to bring it back means a throttled rAF, a script error or
      a tab opened in the background can leave the page blank. The reveal sets its

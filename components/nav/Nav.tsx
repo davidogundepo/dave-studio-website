@@ -18,10 +18,24 @@ export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [bump, setBump] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [hash, setHash] = useState('');
   const path = usePathname();
 
   // Close the sheet on navigation, or it stays open over the new page.
   useEffect(() => setMenu(false), [path]);
+
+  // usePathname() never includes the hash fragment, so "/#pricing" could never
+  // match it — the two anchor links in `links` would never highlight no matter
+  // where you scrolled. Track the hash ourselves instead.
+  useEffect(() => {
+    const sync = () => setHash(window.location.hash);
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+
+  const isActive = (href: string) =>
+    href.startsWith('/#') ? path === '/' && hash === href.slice(1) : path === href;
 
   useEffect(() => {
     if (!menu) return;
@@ -73,8 +87,12 @@ export default function Nav() {
             <Link
               key={l.href}
               href={l.href}
+              // Next's Link intercepts the click and routes it internally, so a
+              // native hashchange event firing isn't guaranteed — set it
+              // ourselves rather than wait on a browser event that may not come.
+              onClick={() => l.href.startsWith('/#') && setHash(l.href.slice(1))}
               className={`label transition-colors duration-300 hover:text-[var(--accent)] ${
-                path === l.href ? 'text-[var(--accent)]' : 'text-[var(--on-ink-2)]'
+                isActive(l.href) ? 'text-[var(--accent)]' : 'text-[var(--on-ink-2)]'
               }`}
             >
               {l.label}
@@ -133,8 +151,13 @@ export default function Nav() {
             <Link
               key={l.href}
               href={l.href}
-              onClick={() => setMenu(false)}
-              className="display border-b border-[var(--line)] py-4 text-[1.6rem] transition-colors last:border-0 hover:text-[var(--accent)]"
+              onClick={() => {
+                setMenu(false);
+                if (l.href.startsWith('/#')) setHash(l.href.slice(1));
+              }}
+              className={`display border-b border-[var(--line)] py-4 text-[1.6rem] transition-colors last:border-0 hover:text-[var(--accent)] ${
+                isActive(l.href) ? 'text-[var(--accent)]' : ''
+              }`}
             >
               {l.label}
             </Link>
