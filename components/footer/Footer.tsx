@@ -36,7 +36,13 @@ export default function Footer() {
         <div className="grid gap-14 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))]">
           <div>
             <div className="flex items-center gap-3">
-              <img src="/brand/mark-light.png" alt="" width={44} height={44} className="rounded-lg" />
+              <img
+                src="/brand/mark-light.png"
+                alt=""
+                width={72}
+                height={72}
+                className="rounded-[18px]"
+              />
               <span className="editorial text-[1.5rem] not-italic leading-none">Dave Studio</span>
             </div>
 

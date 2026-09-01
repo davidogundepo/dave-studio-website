@@ -10,7 +10,7 @@ export const hero = {
   sub: 'Studio-grade graduation and NYSC portraits from the pictures already on your phone. No studio. No photographer. No two-hour session in Lagos traffic.',
   primary: 'Pick your looks',
   secondary: 'See how it works',
-  proof: 'Ready in 8 hours · Pay after you approve',
+  proof: 'Ready in 48 hours · Pay after you approve',
 };
 
 export const problem = {
@@ -47,7 +47,7 @@ export const process = {
 export const guarantee = {
   eyebrow: 'The guarantee',
   title: 'You do not pay for a portrait you would not post.',
-  body: 'Approve every image before you pay. If one is not right, say so and it is redone at no cost. If none of them land, you pay nothing at all and keep the files anyway.',
+  body: 'Approve the watermarked preview before you pay a thing. If one is not right, say so and it is redone at no cost. If none of them land, you owe nothing — and no clean file changes hands either.',
   small: 'No deposit. No booking fee. No cancellation charge.',
 };
 
@@ -59,11 +59,11 @@ export const urgency = {
 export const faqs = [
   { q: 'Are these real photographs?', a: 'They are generated portraits built around your real face. Nobody is claiming a camera was in the room. What people see is you, in the gown, looking like you — which is what the photograph was for.' },
   { q: 'Will it actually look like me?', a: 'That is the whole job. Send clear front-facing photos and the likeness holds. Send blurry or heavily filtered ones and it will not — we will tell you before we start rather than after you have paid.' },
-  { q: 'What if I hate them?', a: 'You pay nothing. Approve first, pay second. Anything you want changed gets redone free, and if none of it works you owe us nothing.' },
-  { q: 'How long does it take?', a: 'Most orders come back within 8 hours of receiving your photos. Large family sets can take a day.' },
+  { q: 'What if I hate them?', a: 'You pay nothing. We send watermarked previews first — approve those, then pay, then the clean files land. Anything you want changed gets redone free before you pay a thing, and if none of it works you owe us nothing.' },
+  { q: 'How long does it take?', a: 'Most orders come back within 48 hours of receiving your photos. Large family sets can take a little longer.' },
   { q: 'Can you match my school colours?', a: 'Yes. Send a photo of the regalia — your own, a coursemate’s, or one from your school page — and it is matched exactly: gown, hood, stole, cap.' },
   { q: 'Do you do NYSC as well?', a: 'Yes, and the kit is identical nationwide, so it works whatever state you served in. Camp, parade ground, passing out, studio. There is a whole page of it.' },
-  { q: 'How do I pay?', a: 'Bank transfer once you have approved the set. No deposit up front.' },
+  { q: 'How do I pay?', a: 'Bank transfer once you have approved the watermarked preview. No deposit up front — the clean, print-ready files are sent right after your transfer clears.' },
 ];
 
 export const finalCta = {

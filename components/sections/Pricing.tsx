@@ -47,7 +47,7 @@ export default function Pricing() {
                   <ul className={`mt-8 flex flex-col gap-3 text-sm ${i === 1 ? 'text-[#04191D]/85' : 'text-[var(--on-ink-2)]'}`}>
                     {[
                       'Print-resolution files, yours to keep',
-                      'Back within 8 hours',
+                      'Back within 48 hours',
                       'Unlimited reshoots until you approve',
                       'Pay only after you have seen them',
                     ].map((f) => (
