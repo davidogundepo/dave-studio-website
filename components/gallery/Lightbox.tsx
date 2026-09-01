@@ -3,21 +3,19 @@
 import { useEffect } from 'react';
 import ShotImage from '@/components/media/ShotImage';
 import { useSelection } from '@/components/providers/SelectionProvider';
+import { useScrollLock } from '@/lib/useScrollLock';
 import type { Shot } from '@/lib/types';
 
 export default function Lightbox({ shot, onClose }: { shot: Shot | null; onClose: () => void }) {
   const { has, toggle } = useSelection();
 
+  useScrollLock(Boolean(shot));
+
   useEffect(() => {
     if (!shot) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
-    };
+    return () => window.removeEventListener('keydown', onKey);
   }, [shot, onClose]);
 
   if (!shot) return null;

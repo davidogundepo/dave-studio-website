@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
     default: `${site.name} — ${site.tagline}`,
-    template: `%s — ${site.name}`,
+    template: `${site.name} — %s`,
   },
   description:
     'Studio-grade graduation and NYSC portraits built from the photos already on your phone. Pick your looks, approve the results, then pay. Ready in 48 hours.',

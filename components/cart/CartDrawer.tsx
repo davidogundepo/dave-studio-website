@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useScrollLock } from '@/lib/useScrollLock';
 import Link from 'next/link';
 import { useSelection } from '@/components/providers/SelectionProvider';
 import ShotImage from '@/components/media/ShotImage';
@@ -39,17 +40,14 @@ export default function CartDrawer() {
   const q = quote(count);
   const enough = count >= MIN_LOOKS;
 
-  // Lock the page behind the drawer and allow Escape to dismiss.
+  useScrollLock(open);
+
+  // Allow Escape to dismiss.
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
     window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
-    };
+    return () => window.removeEventListener('keydown', onKey);
   }, [open, setOpen]);
 
   return (
@@ -90,7 +88,7 @@ export default function CartDrawer() {
             lets it grow past the flex parent's bound instead of clipping — so
             without it overflow-y-auto never actually engages, and a full list
             just pushes the price/CTA footer off-screen. */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">
           {count === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <p className="editorial text-2xl text-[var(--on-ink)]">Nothing picked yet.</p>

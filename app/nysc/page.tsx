@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   // the root layout's entirely, so every field it needs has to be repeated,
   // not just the image.
   openGraph: {
-    title: `${title} — ${site.name}`,
+    title: `${site.name} — ${title}`,
     description,
     url: `${site.url}/nysc/`,
     siteName: site.name,
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${title} — ${site.name}`,
+    title: `${site.name} — ${title}`,
     description,
     images: ['/og-nysc.jpg'],
   },
