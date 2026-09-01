@@ -35,6 +35,13 @@ export default function Nav() {
     return () => window.removeEventListener('hashchange', sync);
   }, []);
 
+  // A route change away from "/" always clears any stale hash correctly —
+  // isActive already gates hash-links on path === '/'. But the logo's link
+  // back to "/" doesn't change `path` at all (we're on "/" the whole time,
+  // hash or not), so that specific jump needs its own explicit reset —
+  // otherwise whichever anchor you last visited stays lit forever.
+  const goHome = () => setHash('');
+
   const isActive = (href: string) =>
     href.startsWith('/#') ? path === '/' && hash === href.slice(1) : path === href;
 
@@ -90,7 +97,7 @@ export default function Nav() {
       style={{ height: 'var(--nav-h)' }}
     >
       <div className="shell flex h-full items-center justify-between gap-6">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="Dave Studio, home">
+        <Link href="/" onClick={goHome} className="flex items-center gap-2.5" aria-label="Dave Studio, home">
           <img src="/brand/mark-light.png" alt="" width={34} height={34} className="rounded-[4px]" />
           <span className="editorial whitespace-nowrap text-[1.15rem] not-italic tracking-tight sm:text-[1.4rem]">
             Dave Studio
