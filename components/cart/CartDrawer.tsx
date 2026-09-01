@@ -86,7 +86,11 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        {/* min-h-0 is load-bearing: a flex child defaults to min-height:auto, which
+            lets it grow past the flex parent's bound instead of clipping — so
+            without it overflow-y-auto never actually engages, and a full list
+            just pushes the price/CTA footer off-screen. */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
           {count === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <p className="editorial text-2xl text-[var(--on-ink)]">Nothing picked yet.</p>
