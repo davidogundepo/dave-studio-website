@@ -131,7 +131,11 @@ export default function Footer() {
             </div>
           ))}
 
-          <div>
+          {/* flex+h-full so the email link below can `mt-auto` itself down to
+              the bottom of this grid row — which, since grid items stretch to
+              the tallest column by default, is the same line the left
+              column's social row lands on. */}
+          <div className="lg:flex lg:h-full lg:flex-col">
             <p className="label text-[var(--on-ink-3)]">Also from us</p>
             <ul className="mt-5 space-y-4">
               {sister.map((s) => (
@@ -157,11 +161,9 @@ export default function Footer() {
               ))}
             </ul>
 
-            {/* Sits in the empty room this shorter column has under it,
-                since the info column on the left runs much taller. */}
             <a
               href={mailHref()}
-              className="mt-10 flex items-center gap-2 text-sm text-[var(--on-ink-2)] transition-colors duration-300 hover:text-[var(--accent)]"
+              className="mt-10 flex items-center gap-2 text-sm text-[var(--on-ink-2)] transition-colors duration-300 hover:text-[var(--accent)] lg:mt-auto"
             >
               <MailIcon />
               {site.email}
