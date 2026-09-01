@@ -84,11 +84,24 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* min-h-0 is load-bearing: a flex child defaults to min-height:auto, which
-            lets it grow past the flex parent's bound instead of clipping — so
-            without it overflow-y-auto never actually engages, and a full list
-            just pushes the price/CTA footer off-screen. */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">
+        {/*
+          Three things are load-bearing here, and the list does not scroll
+          without all three:
+
+          - min-h-0: a flex child defaults to min-height:auto, so it grows past
+            the flex parent instead of clipping, and overflow-y-auto never
+            engages at all.
+          - data-lenis-prevent: Lenis runs with smoothWheel and intercepts every
+            wheel event on the document to animate the page itself, so this
+            container never receives one natively. The attribute tells Lenis to
+            leave events inside this subtree alone.
+          - overscroll-contain: stops a scroll that reaches the end of this list
+            from chaining out to whatever is behind it.
+        */}
+        <div
+          data-lenis-prevent
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5"
+        >
           {count === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <p className="editorial text-2xl text-[var(--on-ink)]">Nothing picked yet.</p>
