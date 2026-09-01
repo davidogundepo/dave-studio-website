@@ -123,7 +123,7 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} Dave Studio. Lagos, Nigeria.</p>
           <p className="max-w-[52ch]">
             Portraits are generated around your own photographs. Every other face on this site
-            belongs to someone who does not exist.
+            is AI-generated for demonstration and is not a real customer.
           </p>
         </div>
       </div>
