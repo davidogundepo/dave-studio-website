@@ -20,6 +20,16 @@ const columns = [
 ];
 
 /** Inline so the footer keeps its zero-icon-dependency footprint. */
+function MailIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4" aria-hidden>
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2" />
+      <path d="M3.5 6.5 12 13l8.5-6.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Inline so the footer keeps its zero-icon-dependency footprint. */
 function WhatsAppIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
@@ -114,6 +124,16 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+
+            {/* Sits in the empty room this shorter column has under it,
+                since the info column on the left runs much taller. */}
+            <a
+              href={`mailto:${site.email}`}
+              className="mt-10 flex items-center gap-2 text-sm text-[var(--on-ink-2)] transition-colors duration-300 hover:text-[var(--accent)]"
+            >
+              <MailIcon />
+              {site.email}
+            </a>
           </div>
         </div>
 

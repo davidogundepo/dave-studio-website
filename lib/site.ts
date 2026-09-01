@@ -4,6 +4,7 @@ export const site = {
   tagline: 'Graduation portraits, without the graduation photographer.',
   whatsapp: '2347079693500',
   whatsappDisplay: '+234 707 969 3500',
+  email: 'david.oludepo@gmail.com',
   instagram: 'https://instagram.com/davestudio.ng',
 } as const;
 
