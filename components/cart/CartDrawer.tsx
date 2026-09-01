@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSelection } from '@/components/providers/SelectionProvider';
 import ShotImage from '@/components/media/ShotImage';
 import { shotById } from '@/lib/gallery';
-import { MIN_LOOKS, bundles, naira, quote, site } from '@/lib/site';
+import { MIN_LOOKS, naira, priceFor, quote, site } from '@/lib/site';
 
 /**
  * Builds the WhatsApp message.
@@ -25,7 +25,7 @@ function whatsappHref(ids: string[]) {
       return `${i + 1}. ${file}  ·  ${s.title}`;
     });
   const q = quote(ids.length);
-  const price = q.current ? `\n\nBundle: ${q.current.label} — ${naira(q.current.naira)}` : '';
+  const price = q.price !== null ? `\n\nTotal: ${naira(q.price)}${q.label ? ` (${q.label})` : ''}` : '';
   const text =
     `Hi David, I'd like these ${lines.length} looks from Dave Studio:\n\n` +
     lines.join('\n') +
@@ -135,21 +135,27 @@ export default function CartDrawer() {
         </div>
 
         <div className="border-t border-[var(--line)] px-6 py-5">
-          {/* The nudge to the next bundle is the whole reason this panel exists. */}
-          {q.next && (
+          {/* Every count from 5 up has its own real price — see lib/site.ts
+              priceFor(). The nudge just points at the next round number, since
+              10 is still the best per-look rate even though nothing in between
+              is free. */}
+          {!enough && (
             <p className="mb-3 rounded-lg bg-[var(--accent-soft)] px-3 py-2 text-center text-xs text-[var(--accent)]">
-              {enough
-                ? `Add ${q.remaining} more for the ${q.next.label} — ${naira(q.next.naira)}`
-                : `${q.remaining} more to unlock ${naira(bundles[0].naira)} for ${bundles[0].looks}`}
+              {MIN_LOOKS - count} more to unlock pricing — starts at {naira(priceFor(MIN_LOOKS) ?? 0)} for {MIN_LOOKS}
+            </p>
+          )}
+          {enough && q.next && (
+            <p className="mb-3 rounded-lg bg-[var(--accent-soft)] px-3 py-2 text-center text-xs text-[var(--accent)]">
+              Add {q.remaining} more to reach {q.next.looks} for {naira(q.next.naira)} total
             </p>
           )}
 
           <div className="mb-4 flex items-baseline justify-between">
             <span className="label text-[var(--on-ink-2)]">
-              {q.current ? q.current.label : `Minimum ${MIN_LOOKS}`}
+              {q.label ?? (enough ? `${count} looks` : `Minimum ${MIN_LOOKS}`)}
             </span>
             <span className="display text-2xl text-[var(--on-ink)]">
-              {q.current ? naira(q.current.naira) : '—'}
+              {q.price !== null ? naira(q.price) : '—'}
             </span>
           </div>
 

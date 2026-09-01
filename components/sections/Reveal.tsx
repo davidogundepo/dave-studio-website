@@ -9,9 +9,9 @@ import { prefersReducedMotion, whenVisible } from '@/lib/motion';
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 /**
- * Fades and lifts its children into view once. Elements are hidden by the
- * [data-reveal] rule in globals.css so there is no flash of the finished state
- * before this runs.
+ * Fades and lifts its children into view once. The hidden starting state is
+ * set here in JS (see below), not in CSS — see globals.css for why: a CSS
+ * rule that hides content up front depends on JS to ever bring it back.
  */
 export default function Reveal({
   children,

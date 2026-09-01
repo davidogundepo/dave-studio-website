@@ -1,11 +1,33 @@
 import type { Metadata } from 'next';
 import GalleryBrowser from '@/components/gallery/GalleryBrowser';
 import { campusShots } from '@/lib/gallery';
+import { site } from '@/lib/site';
+
+const title = 'Campus & convocation looks';
+const description =
+  'Every graduation look in the Dave Studio catalogue — gowns, hoods, stoles, family groups, magazine covers. Pick the ones you want.';
 
 export const metadata: Metadata = {
-  title: 'Campus & convocation looks',
-  description:
-    'Every graduation look in the Dave Studio catalogue — gowns, hoods, stoles, family groups, magazine covers. Pick the ones you want.',
+  title,
+  description,
+  // Metadata merges shallowly, not deep — declaring openGraph here replaces
+  // the root layout's entirely, so every field it needs has to be repeated,
+  // not just the image.
+  openGraph: {
+    title: `${title} — ${site.name}`,
+    description,
+    url: `${site.url}/campus/`,
+    siteName: site.name,
+    type: 'website',
+    locale: 'en_NG',
+    images: [{ url: '/og-campus.jpg', width: 1200, height: 630, alt: title }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${title} — ${site.name}`,
+    description,
+    images: ['/og-campus.jpg'],
+  },
 };
 
 export default function CampusPage() {

@@ -1,11 +1,33 @@
 import type { Metadata } from 'next';
 import GalleryBrowser from '@/components/gallery/GalleryBrowser';
 import { nyscShots } from '@/lib/gallery';
+import { site } from '@/lib/site';
+
+const title = 'NYSC looks';
+const description =
+  'NYSC portraits — camp, parade ground, passing out, studio. The kit is identical in every state, so every look here works wherever you served.';
 
 export const metadata: Metadata = {
-  title: 'NYSC looks',
-  description:
-    'NYSC portraits — camp, parade ground, passing out, studio. The kit is identical in every state, so every look here works wherever you served.',
+  title,
+  description,
+  // Metadata merges shallowly, not deep — declaring openGraph here replaces
+  // the root layout's entirely, so every field it needs has to be repeated,
+  // not just the image.
+  openGraph: {
+    title: `${title} — ${site.name}`,
+    description,
+    url: `${site.url}/nysc/`,
+    siteName: site.name,
+    type: 'website',
+    locale: 'en_NG',
+    images: [{ url: '/og-nysc.jpg', width: 1200, height: 630, alt: title }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${title} — ${site.name}`,
+    description,
+    images: ['/og-nysc.jpg'],
+  },
 };
 
 export default function NyscPage() {

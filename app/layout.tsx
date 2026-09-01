@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description:
-    'Studio-grade graduation and NYSC portraits built from the photos already on your phone. Pick your looks, approve the results, then pay. Ready in 24 hours.',
+    'Studio-grade graduation and NYSC portraits built from the photos already on your phone. Pick your looks, approve the results, then pay. Ready in 8 hours.',
   openGraph: {
     title: `${site.name} — ${site.tagline}`,
     description:
