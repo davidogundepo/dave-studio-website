@@ -27,7 +27,7 @@ export default function Lightbox({ shot, onClose }: { shot: Shot | null; onClose
       // keeps it out of the overlay so a scroll here does nothing rather than
       // quietly driving the page underneath.
       data-lenis-prevent
-      className="fixed inset-0 z-[800] grid place-items-center overflow-y-auto overscroll-contain bg-black/90 p-4 backdrop-blur-md"
+      className="scrollbar-accent fixed inset-0 z-[800] grid place-items-center overflow-y-auto overscroll-contain bg-black/90 p-4 backdrop-blur-md"
       onClick={onClose}
       role="dialog"
       aria-modal="true"

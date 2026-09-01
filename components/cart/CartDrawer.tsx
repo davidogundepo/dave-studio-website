@@ -100,7 +100,7 @@ export default function CartDrawer() {
         */}
         <div
           data-lenis-prevent
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5"
+          className="scrollbar-accent min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5"
         >
           {count === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
