@@ -220,6 +220,20 @@ export default function GalleryBrowser({
                   style={on ? { boxShadow: `inset 0 0 0 3px ${accent}` } : undefined}
                 />
 
+                {/* The catalogue number, always visible — not just on hover. This
+                    is the number an order names and the number the search box
+                    matches; without it a photo has no number while browsing
+                    normally, and "the fourth one I'm looking at" silently means
+                    something different from "look 4". */}
+                {s.ref !== null && (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute left-2.5 top-2.5 rounded-full bg-black/55 px-2 py-1 font-mono text-[0.68rem] tracking-wide text-white/90 backdrop-blur-sm"
+                  >
+                    {String(s.ref).padStart(3, '0')}
+                  </span>
+                )}
+
                 <span
                   aria-hidden
                   className={`absolute right-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-full text-sm font-bold transition-all duration-300 ${

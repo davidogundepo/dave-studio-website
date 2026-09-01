@@ -17,6 +17,9 @@ Run:  python3 scripts/build_media.py [--force]
 import json, os, re, subprocess, sys
 from concurrent.futures import ProcessPoolExecutor
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from featured_match import build_featured_rank
+
 ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT    = os.path.join(ROOT, "public", "gallery")
 FORCE  = "--force" in sys.argv
@@ -89,28 +92,12 @@ def main():
     # lead every surface — hero, marquee, bento, share card, and the top of both
     # galleries — because an index-stride pick will happily surface a shot with a
     # displaced arm. Everything else still ships, just behind them.
-    featured_path = os.path.join(here, "featured.txt")
-    featured_rank = {}
-    if os.path.exists(featured_path):
-        wanted = [l.strip() for l in open(featured_path)
-                  if l.strip() and not l.startswith("#")]
-        stems = {}
-        for r in inv.values():
-            stems[os.path.splitext(r["name"])[0]] = r["name"]
-            orig = original.get(r["name"])
-            if orig:
-                stems[os.path.splitext(orig)[0]] = r["name"]
-        for rank, w in enumerate(wanted):
-            key = w
-            if key not in stems and re.fullmatch(r"\d{2,3}", w):
-                key = f"{int(w):03d}"                     # bare 070 style entries
-            if key not in stems:                          # tolerate a truncated paste
-                near = [s for s in stems if s.startswith(w)]
-                key = near[0] if len(near) == 1 else None
-            if key is None:
-                print(f"  WARN  featured entry not found: {w}")
-                continue
-            featured_rank[stems[key]] = rank
+    #
+    # Matching goes through featured_match so this and rename_sources.py — which
+    # numbers the same set 001, 002, 003… on disk — can never disagree about
+    # which 121 files are meant.
+    featured_rank = build_featured_rank({r["name"]: original.get(r["name"], r["name"])
+                                         for r in inv.values()})
 
     rows = []
     for h, r in inv.items():
