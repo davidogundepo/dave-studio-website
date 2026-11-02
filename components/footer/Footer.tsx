@@ -174,7 +174,17 @@ export default function Footer() {
         <hr className="rule my-12" />
 
         <div className="flex flex-col gap-3 text-xs text-[var(--on-ink-3)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Dave Studio. Lagos, Nigeria.</p>
+          <p>
+            © {new Date().getFullYear()} Dave Studio. Lagos, Nigeria. Built by{' '}
+            <a
+              href="https://davidogundepo.web.app"
+              target="_blank"
+              rel="noopener"
+              className="text-[var(--on-ink-2)] underline decoration-[var(--accent)] underline-offset-4 transition-colors hover:text-[var(--accent)]"
+            >
+              David Ogundepo ↗
+            </a>
+          </p>
           <p className="max-w-[52ch]">
             Portraits are generated around your own photographs. Every other face on this site
             is AI-generated for demonstration and is not a real customer.
